@@ -1,0 +1,23 @@
+{
+  "name": "pagon/one",
+  "description": "Pagon All In One",
+  "keywords": ["framework", "pagon", "pagon one", "all in one"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Corrie Zhao",
+      "email": "hfcorriez@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.9"
+  },
+  "require-dev": {
+    "pagon/pagon": "dev-develop"
+  },
+  "autoload": {
+    "files": [
+      "pagon1.php"
+    ]
+  }
+}
