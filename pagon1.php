@@ -31,19 +31,19 @@ use Pagon\Exception\Stop;
 
 class Fiber implements \ArrayAccess
 {
-        protected $injectors;
+    protected $injectors;
 
-        public function __construct(array $injectors = array())
+    public function __construct(array $injectors = array())
     {
         $this->injectors = $injectors;
     }
 
-        public function __set($key, $value)
+    public function __set($key, $value)
     {
         $this->injectors[$key] = $value;
     }
 
-        public function &__get($key)
+    public function &__get($key)
     {
         if (!isset($this->injectors[$key])) throw new \InvalidArgumentException(sprintf('Can not get non-exists injector "%s::%s"', get_called_class(), $key));
 
@@ -55,17 +55,17 @@ class Fiber implements \ArrayAccess
         return $tmp;
     }
 
-        public function __isset($key)
+    public function __isset($key)
     {
         return isset($this->injectors[$key]);
     }
 
-        public function __unset($key)
+    public function __unset($key)
     {
         unset($this->injectors[$key]);
     }
 
-        public function protect($key, \Closure $closure = null)
+    public function protect($key, \Closure $closure = null)
     {
         if (!$closure) {
             $closure = $key;
@@ -79,7 +79,7 @@ class Fiber implements \ArrayAccess
         return $key ? ($this->injectors[$key] = $func) : $func;
     }
 
-        public function share($key, \Closure $closure = null)
+    public function share($key, \Closure $closure = null)
     {
         if (!$closure) {
             $closure = $key;
@@ -99,7 +99,7 @@ class Fiber implements \ArrayAccess
         return $key ? ($this->injectors[$key] = $func) : $func;
     }
 
-        public function extend($key, \Closure $closure)
+    public function extend($key, \Closure $closure)
     {
         if (!isset($this->injectors[$key])) {
             throw new \InvalidArgumentException(sprintf('Injector "%s::%s" is not defined.', get_called_class(), $key));
@@ -117,7 +117,7 @@ class Fiber implements \ArrayAccess
         };
     }
 
-        public function __call($method, $args)
+    public function __call($method, $args)
     {
         if (($closure = $this->$method) instanceof \Closure) {
             return call_user_func_array($closure, $args);
@@ -126,7 +126,7 @@ class Fiber implements \ArrayAccess
         throw new \BadMethodCallException(sprintf('Call to undefined protect injector "%s::%s()', get_called_class(), $method));
     }
 
-        public function raw($key = null, $value = null)
+    public function raw($key = null, $value = null)
     {
         if ($key === null) {
             return $this->injectors;
@@ -137,34 +137,34 @@ class Fiber implements \ArrayAccess
         return isset($this->injectors[$key]) ? $this->injectors[$key] : false;
     }
 
-        public function keys()
+    public function keys()
     {
         return array_keys($this->injectors);
     }
 
-        public function append(array $injectors)
+    public function append(array $injectors)
     {
         $this->injectors = $injectors + $this->injectors;
     }
 
-        public function offsetExists($offset)
+    public function offsetExists($offset)
     {
         return $this->__isset($offset);
     }
 
-        public function &offsetGet($offset)
+    public function &offsetGet($offset)
     {
         if (!isset($this->injectors[$offset])) throw new \InvalidArgumentException(sprintf('Can not get non-exists injector "%s::%s"', get_called_class(), $offset));
 
         return $this->__get($offset);
     }
 
-        public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value)
     {
         return $this->__set($offset, $value);
     }
 
-        public function offsetUnset($offset)
+    public function offsetUnset($offset)
     {
         return $this->__unset($offset);
     }
@@ -178,9 +178,9 @@ if (function_exists('FNMATCH')) {
 
 class EventEmitter extends Fiber
 {
-        protected $listeners = array();
+    protected $listeners = array();
 
-        public function emit($event, $args = null)
+    public function emit($event, $args = null)
     {
         $event = strtolower($event);
 
@@ -230,7 +230,7 @@ class EventEmitter extends Fiber
         }
     }
 
-        public function on($event, \Closure $listener)
+    public function on($event, \Closure $listener)
     {
         if (is_array($event)) {
             foreach ($event as $e) {
@@ -241,7 +241,7 @@ class EventEmitter extends Fiber
         }
     }
 
-        public function once($event, \Closure $listener)
+    public function once($event, \Closure $listener)
     {
         if (is_array($event)) {
             foreach ($event as $e) {
@@ -252,7 +252,7 @@ class EventEmitter extends Fiber
         }
     }
 
-        public function many($event, $times = 1, \Closure $listener)
+    public function many($event, $times = 1, \Closure $listener)
     {
         if (is_array($event)) {
             foreach ($event as $e) {
@@ -263,7 +263,7 @@ class EventEmitter extends Fiber
         }
     }
 
-        public function off($event, \Closure $listener)
+    public function off($event, \Closure $listener)
     {
         if (is_array($event)) {
             foreach ($event as $e) {
@@ -281,7 +281,7 @@ class EventEmitter extends Fiber
         }
     }
 
-        public function listeners($event)
+    public function listeners($event)
     {
         if (!empty($this->listeners[$event])) {
             return $this->listeners[$event];
@@ -289,17 +289,17 @@ class EventEmitter extends Fiber
         return array();
     }
 
-        public function addListener($event, \Closure $listener)
+    public function addListener($event, \Closure $listener)
     {
         $this->on($event, $listener);
     }
 
-        public function removeListener($event, \Closure $listener)
+    public function removeListener($event, \Closure $listener)
     {
         $this->off($event, $listener);
     }
 
-        public function removeAllListeners($event = null)
+    public function removeAllListeners($event = null)
     {
         if ($event === null) {
             $this->listeners = array();
@@ -308,7 +308,7 @@ class EventEmitter extends Fiber
         }
     }
 
-        protected static function match($pattern, $string)
+    protected static function match($pattern, $string)
     {
         if (FNMATCH) {
             return fnmatch($pattern, $string);
@@ -322,22 +322,22 @@ abstract class Middleware extends EventEmitter
 {
     const _CLASS_ = __CLASS__;
 
-        protected $input;
+    protected $input;
 
-        protected $output;
+    protected $output;
 
-        protected $app;
+    protected $app;
 
-        protected $options = array();
+    protected $options = array();
 
-        protected $next;
+    protected $next;
 
-        public function __construct(array $options = array())
+    public function __construct(array $options = array())
     {
         $this->options = $options + $this->options;
     }
 
-        public static function build($route, $options = array())
+    public static function build($route, $options = array())
     {
         if (is_string($route) && is_subclass_of($route, __CLASS__, true)) {
             // Only Class name
@@ -348,9 +348,9 @@ abstract class Middleware extends EventEmitter
         return false;
     }
 
-        abstract function call();
+    abstract function call();
 
-        public function __invoke($input, $output, $next)
+    public function __invoke($input, $output, $next)
     {
         $this->input = $input;
         $this->output = $output;
@@ -359,7 +359,7 @@ abstract class Middleware extends EventEmitter
         $this->call();
     }
 
-        public function next()
+    public function next()
     {
         call_user_func($this->next);
     }
@@ -368,24 +368,24 @@ abstract class Middleware extends EventEmitter
 
 abstract class Route extends Middleware
 {
-        protected function before()
+    protected function before()
     {
         // Implements if you need
     }
 
-        protected function after()
+    protected function after()
     {
         // Implements if you need
     }
 
-        public function call()
+    public function call()
     {
         $this->before();
         $this->run($this->input, $this->output);
         $this->after();
     }
 
-        public function next()
+    public function next()
     {
         call_user_func($this->next);
     }
@@ -398,11 +398,11 @@ class Router extends Middleware
 {
     const _CLASS_ = __CLASS__;
 
-        public $app;
+    public $app;
 
-        protected $automatic;
+    protected $automatic;
 
-        public function set($path, $route, $more = null)
+    public function set($path, $route, $more = null)
     {
         if ($more) {
             $_args = func_get_args();
@@ -413,12 +413,12 @@ class Router extends Middleware
         return $this;
     }
 
-        public function get($path)
+    public function get($path)
     {
         return $this->app->routes[$path];
     }
 
-        public function name($name, $path = null)
+    public function name($name, $path = null)
     {
         if ($path === null) {
             $path = array_keys($this->app->routes);
@@ -429,12 +429,12 @@ class Router extends Middleware
         return $this;
     }
 
-        public function path($name)
+    public function path($name)
     {
         return isset($this->app->names[$name]) ? $this->app->names[$name] : false;
     }
 
-        public function dispatch()
+    public function dispatch()
     {
         // Check path
         if ($this->options['path'] === null) return false;
@@ -474,14 +474,14 @@ class Router extends Middleware
         return false;
     }
 
-        public function run($route)
+    public function run($route)
     {
         return $this->pass($route, function ($r) {
             return Route::build($r);
         });
     }
 
-        public function pass($routes, \Closure $build)
+    public function pass($routes, \Closure $build)
     {
         if (!$routes) return false;
 
@@ -513,13 +513,13 @@ class Router extends Middleware
         return $pass(current($routes));
     }
 
-        public function automatic(\Closure $closure)
+    public function automatic(\Closure $closure)
     {
         $this->automatic = $closure;
         return $this;
     }
 
-        public function handle($route, $args = array())
+    public function handle($route, $args = array())
     {
         if (isset($this->app->routes[$route])) {
             $args && $this->app->param($args);
@@ -528,7 +528,7 @@ class Router extends Middleware
         return false;
     }
 
-        public function call()
+    public function call()
     {
         try {
             if (!$this->dispatch()) {
@@ -538,7 +538,7 @@ class Router extends Middleware
         }
     }
 
-        protected static function match($path, $route)
+    protected static function match($path, $route)
     {
         $param = false;
 
@@ -559,7 +559,7 @@ class Router extends Middleware
         return $param;
     }
 
-        protected static function pathToRegex($path)
+    protected static function pathToRegex($path)
     {
         if ($path[1] !== '^') {
             $path = str_replace(array('/'), array('\\/'), $path);
@@ -586,25 +586,25 @@ class Router extends Middleware
 
 class Config extends Fiber
 {
-        const LOAD_AUTODETECT = 0;
+    const LOAD_AUTODETECT = 0;
 
-        public static $dir;
+    public static $dir;
 
-        protected static $imports = array(
+    protected static $imports = array(
         'mimes' => array('pagon/config/mimes.php', 0),
     );
 
-        public function __construct(array $input)
+    public function __construct(array $input)
     {
         parent::__construct($input);
     }
 
-        public static function import($name, $file, $type = self::LOAD_AUTODETECT)
+    public static function import($name, $file, $type = self::LOAD_AUTODETECT)
     {
         static::$imports[$name] = array($file, $type);
     }
 
-        public static function export($name)
+    public static function export($name)
     {
         if (!isset(static::$imports[$name])) {
             throw new \InvalidArgumentException("Load config error with non-exists name \"$name\"");
@@ -626,7 +626,7 @@ class Config extends Fiber
         return static::$imports[$name] = static::load($file, $type);
     }
 
-        public static function load($file, $type = self::LOAD_AUTODETECT)
+    public static function load($file, $type = self::LOAD_AUTODETECT)
     {
         if (!is_file($file)) {
             throw new \InvalidArgumentException("Config load error with non-exists file \"$file\"");
@@ -643,7 +643,7 @@ class Config extends Fiber
         }
     }
 
-        public function dump($type)
+    public function dump($type)
     {
         return Parser::dump($this->injectors, $type);
     }
@@ -654,16 +654,16 @@ class View
 {
     const _CLASS_ = __CLASS__;
 
-        protected $path;
+    protected $path;
 
-        protected $data = array();
+    protected $data = array();
 
-        protected $options = array(
+    protected $options = array(
         'dir'    => '',
         'engine' => null,
     );
 
-        public function __construct($path, $data = array(), $options = array())
+    public function __construct($path, $data = array(), $options = array())
     {
         // Set dir for the view
         $this->options = $options + $this->options;
@@ -686,25 +686,25 @@ class View
         $this->data = $data;
     }
 
-        public function setEngine($engine)
+    public function setEngine($engine)
     {
         $this->options['engine'] = $engine;
         return $this;
     }
 
-        public function setDir($dir)
+    public function setDir($dir)
     {
         $this->options['dir'] = $dir;
         return $this;
     }
 
-        public function set(array $array = array())
+    public function set(array $array = array())
     {
         $this->data = $array + $this->data;
         return $this;
     }
 
-        public function render()
+    public function render()
     {
         $engine = $this->options['engine'];
 
@@ -720,27 +720,27 @@ class View
         return $engine->render($this->path, $this->data, $this->options['dir']);
     }
 
-        public function __set($key, $value)
+    public function __set($key, $value)
     {
         $this->data[$key] = $value;
     }
 
-        public function __get($key)
+    public function __get($key)
     {
         return isset($this->data[$key]) ? $this->data[$key] : null;
     }
 
-        public function __isset($key)
+    public function __isset($key)
     {
         return isset($this->data[$key]);
     }
 
-        public function __unset($key)
+    public function __unset($key)
     {
         unset($this->data[$key]);
     }
 
-        public function __toString()
+    public function __toString()
     {
         return $this->render();
     }
@@ -751,13 +751,13 @@ const VERSION = '0.5';
 
 class App extends EventEmitter
 {
-        public $input;
+    public $input;
 
-        public $output;
+    public $output;
 
-        public $router;
+    public $router;
 
-        protected $injectors = array(
+    protected $injectors = array(
         'mode'       => 'develop',
         'debug'      => false,
         'views'      => false,
@@ -784,15 +784,15 @@ class App extends EventEmitter
         'locals'     => array(),
     );
 
-        private $_cli = false;
+    private $_cli = false;
 
-        private $_run = false;
+    private $_run = false;
 
-        protected static $self;
+    protected static $self;
 
-        protected static $loads = array();
+    protected static $loads = array();
 
-        public static function self()
+    public static function self()
     {
         if (!self::$self) {
             throw new \RuntimeException("There is no App exists");
@@ -801,7 +801,7 @@ class App extends EventEmitter
         return self::$self;
     }
 
-        public function __construct($config = array())
+    public function __construct($config = array())
     {
         $app = & $this;
 
@@ -867,17 +867,17 @@ class App extends EventEmitter
         self::$self = $this;
     }
 
-        public function isCli()
+    public function isCli()
     {
         return $this->_cli;
     }
 
-        public function isRunning()
+    public function isRunning()
     {
         return $this->_run;
     }
 
-        public function set($key, $value)
+    public function set($key, $value)
     {
         if (is_array($key)) {
             foreach ($key as $k => $v) {
@@ -896,27 +896,27 @@ class App extends EventEmitter
         }
     }
 
-        public function enable($key)
+    public function enable($key)
     {
         $this->set($key, true);
     }
 
-        public function disable($key)
+    public function disable($key)
     {
         $this->set($key, false);
     }
 
-        public function enabled($key)
+    public function enabled($key)
     {
         return $this->get($key) === true;
     }
 
-        public function disabled($key)
+    public function disabled($key)
     {
         return $this->get($key) === false;
     }
 
-        public function mode($mode = null)
+    public function mode($mode = null)
     {
         if ($mode) {
             $this->injectors['mode'] = $mode instanceof \Closure ? $mode() : (string)$mode;
@@ -924,7 +924,7 @@ class App extends EventEmitter
         return $this->injectors['mode'];
     }
 
-        public function configure($mode, \Closure $closure = null)
+    public function configure($mode, \Closure $closure = null)
     {
         if ($closure === null) {
             $closure = $mode instanceof \Closure ? $mode : null;
@@ -945,7 +945,7 @@ class App extends EventEmitter
         }
     }
 
-        public function add($path, $middleware = null, $options = array())
+    public function add($path, $middleware = null, $options = array())
     {
         if ($path instanceof Middleware || is_string($path) && $path{0} != '/') {
             // If not path
@@ -971,7 +971,7 @@ class App extends EventEmitter
         $this->injectors['stacks'][] = array($path, $middleware, $options);
     }
 
-        public function bundle($name, $options = array())
+    public function bundle($name, $options = array())
     {
         if (!is_array($options)) {
             $path = $name;
@@ -981,7 +981,7 @@ class App extends EventEmitter
         $this->injectors['bundles'][$name] = $options;
     }
 
-        public function get($path, $route = null, $more = null)
+    public function get($path, $route = null, $more = null)
     {
         // Get config for use
         if ($route === null) {
@@ -1014,7 +1014,7 @@ class App extends EventEmitter
         }
     }
 
-        public function post($path, $route, $more = null)
+    public function post($path, $route, $more = null)
     {
         if ($this->_cli || !$this->input->isPost()) return $this->router;
 
@@ -1025,7 +1025,7 @@ class App extends EventEmitter
         }
     }
 
-        public function put($path, $route, $more = null)
+    public function put($path, $route, $more = null)
     {
         if ($this->_cli || !$this->input->isPut()) return $this->router;
 
@@ -1036,7 +1036,7 @@ class App extends EventEmitter
         }
     }
 
-        public function delete($path, $route, $more = null)
+    public function delete($path, $route, $more = null)
     {
         if ($this->_cli || !$this->input->isDelete()) return $this->router;
 
@@ -1047,7 +1047,7 @@ class App extends EventEmitter
         }
     }
 
-        public function all($path, $route = null, $more = null)
+    public function all($path, $route = null, $more = null)
     {
         if ($this->_cli) return $this->router;
 
@@ -1058,7 +1058,7 @@ class App extends EventEmitter
         }
     }
 
-        public function autoRoute($closure)
+    public function autoRoute($closure)
     {
         if ($closure instanceof \Closure) {
             return $this->router->automatic($closure);
@@ -1080,7 +1080,7 @@ class App extends EventEmitter
         }
     }
 
-        public function cli($path, $route = null, $more = null)
+    public function cli($path, $route = null, $more = null)
     {
         if (!$this->_cli) return $this->router;
 
@@ -1091,7 +1091,7 @@ class App extends EventEmitter
         }
     }
 
-        public function mount($path, $dir = null)
+    public function mount($path, $dir = null)
     {
         if (!$dir) {
             $dir = $path;
@@ -1101,7 +1101,7 @@ class App extends EventEmitter
         $this->injectors['mounts'][$path] = $dir;
     }
 
-        public function load($file)
+    public function load($file)
     {
         if (!$file = $this->path($file)) {
             throw new \InvalidArgumentException('Can load non-exists file "' . $file . '"');
@@ -1114,7 +1114,7 @@ class App extends EventEmitter
         return self::$loads[$file] = include($file);
     }
 
-        public function path($file)
+    public function path($file)
     {
         foreach ($this->injectors['mounts'] as $path => $dir) {
             if ($path === '' || strpos($file, $path) === 0) {
@@ -1130,7 +1130,7 @@ class App extends EventEmitter
         return false;
     }
 
-        public function loaded($file)
+    public function loaded($file)
     {
         if (!$file = $this->path($file)) {
             throw new \InvalidArgumentException('Can not check non-exists file "' . $file . '"');
@@ -1143,7 +1143,7 @@ class App extends EventEmitter
         return false;
     }
 
-        public function engine($name, $engine = null)
+    public function engine($name, $engine = null)
     {
         if ($engine) {
             // Set engine
@@ -1152,12 +1152,12 @@ class App extends EventEmitter
         return isset($this->injectors['engines'][$name]) ? $this->injectors['engines'][$name] : null;
     }
 
-        public function render($path, array $data = null, array $options = array())
+    public function render($path, array $data = null, array $options = array())
     {
         echo $this->compile($path, $data, $options);
     }
 
-        public function compile($path, array $data = null, array $options = array())
+    public function compile($path, array $data = null, array $options = array())
     {
         if (!isset($options['engine'])) {
             // Get ext
@@ -1199,7 +1199,7 @@ class App extends EventEmitter
         return $view;
     }
 
-        public function run()
+    public function run()
     {
         // Check if run
         if ($this->_run) {
@@ -1222,7 +1222,7 @@ class App extends EventEmitter
         try {
             // Emit "bundle" event
             $this->emit('bundle');
-                        foreach ($this->injectors['bundles'] as $id => $options) {
+            foreach ($this->injectors['bundles'] as $id => $options) {
                 // Set id
                 $id = isset($options['id']) ? $options['id'] : $id;
 
@@ -1318,7 +1318,7 @@ class App extends EventEmitter
         if ($_error) $this->restoreErrorHandler();
     }
 
-        public function handleError($type, $route = null)
+    public function handleError($type, $route = null)
     {
         if (!isset($this->injectors['errors'][$type])) {
             throw new \InvalidArgumentException('Unknown error type "' . $type . '" to call');
@@ -1336,24 +1336,24 @@ class App extends EventEmitter
         }
     }
 
-        public function halt($status, $body = '')
+    public function halt($status, $body = '')
     {
         $this->output->status($status)->body($body);
         throw new Exception\Stop;
     }
 
-        public function stop()
+    public function stop()
     {
         throw new Exception\Stop();
     }
 
-        public function pass()
+    public function pass()
     {
         ob_get_level() && ob_clean();
         throw new Exception\Pass();
     }
 
-        public function param($param = null)
+    public function param($param = null)
     {
         if ($param === null) {
             return $this->input->params;
@@ -1367,22 +1367,22 @@ class App extends EventEmitter
         }
     }
 
-        public function assisting()
+    public function assisting()
     {
         $this->load(dirname(__DIR__) . '/assistant.php');
     }
 
-        public function registerErrorHandler()
+    public function registerErrorHandler()
     {
         set_error_handler(array($this, '__error'));
     }
 
-        public function restoreErrorHandler()
+    public function restoreErrorHandler()
     {
         restore_error_handler();
     }
 
-        protected function __autoload($class)
+    protected function __autoload($class)
     {
         if ($class{0} == '\\') $class = ltrim($class, '\\');
 
@@ -1452,12 +1452,12 @@ class App extends EventEmitter
         return false;
     }
 
-        public function __error($type, $message, $file, $line)
+    public function __error($type, $message, $file, $line)
     {
         if (error_reporting() & $type) throw new \ErrorException($message, $type, 0, $file, $line);
     }
 
-        public function __shutdown()
+    public function __shutdown()
     {
         $this->emit('exit');
         if (!$this->_run) return;
@@ -1499,31 +1499,31 @@ use Pagon\Exception\Pass;
 
 class Input extends EventEmitter
 {
-        public $app;
+    public $app;
 
-        public function __construct(App $app)
+    public function __construct(App $app)
     {
         $this->app = $app;
 
         parent::__construct(array('params' => array(), 'query' => &$_GET, 'data' => &$_POST) + $_SERVER);
     }
 
-        public function protocol()
+    public function protocol()
     {
         return $this->injectors['SERVER_PROTOCOL'];
     }
 
-        public function uri()
+    public function uri()
     {
         return $this->injectors['REQUEST_URI'];
     }
 
-        public function root()
+    public function root()
     {
         return rtrim($this->injectors['DOCUMENT_ROOT'], '/') . rtrim($this->scriptName(), '/');
     }
 
-        public function scriptName()
+    public function scriptName()
     {
         if (!isset($this->injectors['script_name'])) {
             $_script_name = $this->injectors['SCRIPT_NAME'];
@@ -1535,7 +1535,7 @@ class Input extends EventEmitter
         return $this->injectors['script_name'];
     }
 
-        public function path()
+    public function path()
     {
         if (!isset($this->injectors['path_info'])) {
             $_path_info = substr_replace($this->injectors['REQUEST_URI'], '', 0, strlen($this->scriptName()));
@@ -1548,7 +1548,7 @@ class Input extends EventEmitter
         return $this->injectors['path_info'];
     }
 
-        public function url()
+    public function url()
     {
         if (!isset($this->injectors['url'])) {
             $_url = $this->scheme() . '://' . $this->host();
@@ -1561,62 +1561,62 @@ class Input extends EventEmitter
         return $this->injectors['url'];
     }
 
-        public function site()
+    public function site()
     {
         return $this->scheme() . '://' . $this->domain();
     }
 
-        public function method()
+    public function method()
     {
         return $this->injectors['REQUEST_METHOD'];
     }
 
-        public function is($method)
+    public function is($method)
     {
         return $this->method() == strtoupper($method);
     }
 
-        public function isGet()
+    public function isGet()
     {
         return $this->method() === 'GET';
     }
 
-        public function isPost()
+    public function isPost()
     {
         return $this->method() === 'POST';
     }
 
-        public function isPut()
+    public function isPut()
     {
         return $this->method() === 'PUT';
     }
 
-        public function isDelete()
+    public function isDelete()
     {
         return $this->method() === 'DELETE';
     }
 
-        public function isAjax()
+    public function isAjax()
     {
         return !$this->header('x-requested-with') && 'XMLHttpRequest' == $this->header('x-requested-with');
     }
 
-        public function isXhr()
+    public function isXhr()
     {
         return $this->isAjax();
     }
 
-        public function isSecure()
+    public function isSecure()
     {
         return $this->scheme() === 'https';
     }
 
-        public function isUpload()
+    public function isUpload()
     {
         return !empty($_FILES);
     }
 
-        public function accept($type = null)
+    public function accept($type = null)
     {
         if (!isset($this->injectors['accept'])) {
             $this->injectors['accept'] = self::buildAcceptMap($this->raw('HTTP_ACCEPT'));
@@ -1649,7 +1649,7 @@ class Input extends EventEmitter
         return null;
     }
 
-        public function acceptEncoding($type = null)
+    public function acceptEncoding($type = null)
     {
         if (!isset($this->injectors['accept_encoding'])) {
             $this->injectors['accept_encoding'] = self::buildAcceptMap($this->raw('HTTP_ACCEPT_LANGUAGE'));
@@ -1673,7 +1673,7 @@ class Input extends EventEmitter
         return null;
     }
 
-        public function acceptLanguage($type = null)
+    public function acceptLanguage($type = null)
     {
         if (!isset($this->injectors['accept_language'])) {
             $this->injectors['accept_language'] = self::buildAcceptMap($this->raw('HTTP_ACCEPT_LANGUAGE'));
@@ -1697,7 +1697,7 @@ class Input extends EventEmitter
         return null;
     }
 
-        public function ip()
+    public function ip()
     {
         if ($ips = $this->proxy()) {
             return $ips[0];
@@ -1705,7 +1705,7 @@ class Input extends EventEmitter
         return $this->injectors['REMOTE_ADDR'];
     }
 
-        public function proxy()
+    public function proxy()
     {
         if ($ips = $this->raw('HTTP_X_FORWARDED_FOR')) {
             return strpos($ips, ', ') ? explode(', ', $ips) : array($ips);
@@ -1714,18 +1714,18 @@ class Input extends EventEmitter
         return array();
     }
 
-        public function subDomains()
+    public function subDomains()
     {
         $parts = explode('.', $this->host());
         return array_reverse(array_slice($parts, 0, -2));
     }
 
-        public function refer()
+    public function refer()
     {
         return $this->raw('HTTP_REFERER');
     }
 
-        public function host()
+    public function host()
     {
         if ($host = $this->raw('HTTP_HOST')) {
             if (strpos($host, ':') !== false) {
@@ -1739,37 +1739,37 @@ class Input extends EventEmitter
         return $this->injectors['SERVER_NAME'];
     }
 
-        public function hostPort()
+    public function hostPort()
     {
         return $this->host() . ':' . $this->port();
     }
 
-        public function domain()
+    public function domain()
     {
         return $this->host();
     }
 
-        public function scheme()
+    public function scheme()
     {
         return !$this->raw('HTTPS') || $this->raw('HTTPS') === 'off' ? 'http' : 'https';
     }
 
-        public function port()
+    public function port()
     {
         return (int)$this->raw('SERVER_PORT');
     }
 
-        public function userAgent()
+    public function userAgent()
     {
         return $this->raw('HTTP_USER_AGENT');
     }
 
-        public function contentType()
+    public function contentType()
     {
         return $this->raw('CONTENT_TYPE');
     }
 
-        public function mediaType()
+    public function mediaType()
     {
         $contentType = $this->contentType();
         if ($contentType) {
@@ -1780,7 +1780,7 @@ class Input extends EventEmitter
         return null;
     }
 
-        public function contentCharset()
+    public function contentCharset()
     {
         $mediaTypeParams = $this->mediaType();
         if (isset($mediaTypeParams['charset'])) {
@@ -1789,7 +1789,7 @@ class Input extends EventEmitter
         return null;
     }
 
-        public function contentLength()
+    public function contentLength()
     {
         if ($len = $this->raw('CONTENT_LENGTH')) {
             return (int)$len;
@@ -1797,23 +1797,23 @@ class Input extends EventEmitter
         return 0;
     }
 
-        public function query($key, $default = null)
+    public function query($key, $default = null)
     {
         return isset($this->injectors['query'][$key]) ? $this->injectors['query'][$key] : $default;
     }
 
-        public function data($key, $default = null)
+    public function data($key, $default = null)
     {
         return isset($this->injectors['data'][$key]) ? $this->injectors['data'][$key] : $default;
 
     }
 
-        public function param($key, $default = null)
+    public function param($key, $default = null)
     {
         return isset($this->injectors['params'][$key]) ? $this->injectors['params'][$key] : $default;
     }
 
-        public function header($name = null)
+    public function header($name = null)
     {
         if (!isset($this->injectors['headers'])) {
             $_header = array();
@@ -1849,7 +1849,7 @@ class Input extends EventEmitter
         return isset($this->injectors['headers'][$name]) ? $this->injectors['headers'][$name] : null;
     }
 
-        public function cookie($key = null, $default = null)
+    public function cookie($key = null, $default = null)
     {
         if (!isset($this->injectors['cookies'])) {
             $this->injectors['cookies'] = $_COOKIE;
@@ -1883,7 +1883,7 @@ class Input extends EventEmitter
         return isset($this->injectors['cookies'][$key]) ? $this->injectors['cookies'][$key] : $default;
     }
 
-        public function session($key = null, $value = null)
+    public function session($key = null, $value = null)
     {
         if ($value !== null) {
             return $_SESSION[$key] = $value;
@@ -1894,7 +1894,7 @@ class Input extends EventEmitter
         return $_SESSION;
     }
 
-        public function body()
+    public function body()
     {
         if (!isset($this->injectors['body'])) {
             $this->injectors['body'] = @(string)file_get_contents('php://input');
@@ -1902,13 +1902,13 @@ class Input extends EventEmitter
         return $this->injectors['body'];
     }
 
-        public function pass()
+    public function pass()
     {
         ob_get_level() && ob_clean();
         throw new Pass();
     }
 
-        protected static function buildAcceptMap($string)
+    protected static function buildAcceptMap($string)
     {
         $_accept = array();
 
@@ -1991,11 +1991,11 @@ class Output extends EventEmitter
         509 => 'Bandwidth Limit Exceeded'
     );
 
-        public $locals = array();
+    public $locals = array();
 
-        public $app;
+    public $app;
 
-        public function __construct(App $app)
+    public function __construct(App $app)
     {
         $this->app = $app;
 
@@ -2012,7 +2012,7 @@ class Output extends EventEmitter
         $this->locals = & $this->app->locals;
     }
 
-        public function body($content = null)
+    public function body($content = null)
     {
         if ($content !== null) {
             $this->injectors['body'] = $content;
@@ -2023,7 +2023,7 @@ class Output extends EventEmitter
         return $this->injectors['body'];
     }
 
-        public function write($data)
+    public function write($data)
     {
         if (!$data) return $this->injectors['body'];
 
@@ -2033,13 +2033,13 @@ class Output extends EventEmitter
         return $this;
     }
 
-        public function end($data = '')
+    public function end($data = '')
     {
         $this->write($data);
         throw new Stop();
     }
 
-        public function status($status = null)
+    public function status($status = null)
     {
         if ($status === null) {
             return $this->injectors['status'];
@@ -2051,7 +2051,7 @@ class Output extends EventEmitter
         }
     }
 
-        public function header($name = null, $value = null, $replace = true)
+    public function header($name = null, $value = null, $replace = true)
     {
         if ($name === null) {
             return $this->injectors['headers'];
@@ -2079,7 +2079,7 @@ class Output extends EventEmitter
         }
     }
 
-        public function charset($charset = null)
+    public function charset($charset = null)
     {
         if ($charset) {
             $this->injectors['charset'] = $charset;
@@ -2088,7 +2088,7 @@ class Output extends EventEmitter
         return $this->injectors['charset'];
     }
 
-        public function lastModified($time = null)
+    public function lastModified($time = null)
     {
         if ($time !== null) {
             if (is_integer($time)) {
@@ -2104,7 +2104,7 @@ class Output extends EventEmitter
         return $this->header('Last-Modified');
     }
 
-        public function etag($value = null)
+    public function etag($value = null)
     {
         if ($value !== null) {
             //Set etag value
@@ -2125,7 +2125,7 @@ class Output extends EventEmitter
         return $this->header('Etag');
     }
 
-        public function expires($time = null)
+    public function expires($time = null)
     {
         if ($time !== null) {
             if (!is_numeric($time) && is_string($time)) {
@@ -2141,7 +2141,7 @@ class Output extends EventEmitter
         return $this->header('Expires');
     }
 
-        public function contentType($mime_type = null)
+    public function contentType($mime_type = null)
     {
         if ($mime_type) {
             if (!strpos($mime_type, '/')) {
@@ -2158,7 +2158,7 @@ class Output extends EventEmitter
         return $this->injectors['content_type'];
     }
 
-        public function cookie($key = null, $value = null, $option = array())
+    public function cookie($key = null, $value = null, $option = array())
     {
         if ($value !== null) {
             if ($value !== false) {
@@ -2173,7 +2173,7 @@ class Output extends EventEmitter
         return isset($this->injectors['cookies'][$key]) ? $this->injectors['cookies'][$key] : null;
     }
 
-        public function message($status = null)
+    public function message($status = null)
     {
         !$status && $status = $this->injectors['status'];
         if (isset(self::$messages[$status])) {
@@ -2182,7 +2182,7 @@ class Output extends EventEmitter
         return null;
     }
 
-        public function sendHeader()
+    public function sendHeader()
     {
         // Check header
         if (headers_sent() === false) {
@@ -2257,96 +2257,96 @@ class Output extends EventEmitter
         return $this;
     }
 
-        public function render($template, array $data = null, array $options = array())
+    public function render($template, array $data = null, array $options = array())
     {
         $this->app->render($template, $data, $options);
         return $this;
     }
 
-        public function compile($template, array $data = null, array $options = array())
+    public function compile($template, array $data = null, array $options = array())
     {
         return $this->app->compile($template, $data, $options);
     }
 
-        public function json($data)
+    public function json($data)
     {
         $this->contentType('application/json');
         $this->body(json_encode($data));
         return $this;
     }
 
-        public function jsonp($data, $callback = 'callback')
+    public function jsonp($data, $callback = 'callback')
     {
         $this->contentType('application/javascript');
         $this->body($callback . '(' . json_encode($data) . ');');
         return $this;
     }
 
-        public function xml($data, $root = 'root', $item = 'item')
+    public function xml($data, $root = 'root', $item = 'item')
     {
         $this->contentType('application/xml');
         $this->body(\Pagon\Xml::fromArray($data, $root, $item));
         return $this;
     }
 
-        public function redirect($url, $status = 302)
+    public function redirect($url, $status = 302)
     {
         $this->injectors['status'] = $status;
         $this->injectors['headers']['location'] = $url == 'back' ? $this->app->input->refer() : $url;
         return $this;
     }
 
-        public function stop()
+    public function stop()
     {
         throw new Stop();
     }
 
-        public function isCachable()
+    public function isCachable()
     {
         return $this->injectors['status'] >= 200 && $this->injectors['status'] < 300 || $this->injectors['status'] == 304;
     }
 
-        public function isEmpty()
+    public function isEmpty()
     {
         return in_array($this->injectors['status'], array(201, 204, 304));
     }
 
-        public function isOk()
+    public function isOk()
     {
         return $this->injectors['status'] === 200;
     }
 
-        public function isSuccessful()
+    public function isSuccessful()
     {
         return $this->injectors['status'] >= 200 && $this->injectors['status'] < 300;
     }
 
-        public function isRedirect()
+    public function isRedirect()
     {
         return in_array($this->injectors['status'], array(301, 302, 303, 307));
     }
 
-        public function isForbidden()
+    public function isForbidden()
     {
         return $this->injectors['status'] === 403;
     }
 
-        public function isNotFound()
+    public function isNotFound()
     {
         return $this->injectors['status'] === 404;
     }
 
-        public function isClientError()
+    public function isClientError()
     {
         return $this->injectors['status'] >= 400 && $this->injectors['status'] < 500;
     }
 
-        public function isServerError()
+    public function isServerError()
     {
         return $this->injectors['status'] >= 500 && $this->injectors['status'] < 600;
     }
 
-        public function __toString()
+    public function __toString()
     {
         return $this->injectors['body'];
     }
@@ -2365,16 +2365,16 @@ use Pagon\Config;
 
 class Input extends EventEmitter
 {
-        public $app;
+    public $app;
 
-        public function __construct(App $app)
+    public function __construct(App $app)
     {
         $this->app = $app;
 
         parent::__construct(array('params' => array()) + $_SERVER);
     }
 
-        public function path()
+    public function path()
     {
         if (!isset($this->injectors['path_info'])) {
             $this->injectors['path_info'] = isset($GLOBALS['argv'][1]) && $GLOBALS['argv'][1]{0} != '-' ? $GLOBALS['argv'][1] : '';
@@ -2383,12 +2383,12 @@ class Input extends EventEmitter
         return $this->injectors['path_info'];
     }
 
-        public function root()
+    public function root()
     {
         return getcwd();
     }
 
-        public function body()
+    public function body()
     {
         if (!isset($this->injectors['body'])) {
             $this->injectors['body'] = @(string)file_get_contents('php://input');
@@ -2396,12 +2396,12 @@ class Input extends EventEmitter
         return $this->injectors['body'];
     }
 
-        public function param($key, $default = null)
+    public function param($key, $default = null)
     {
         return isset($this->injectors['params'][$key]) ? $this->injectors['params'][$key] : $default;
     }
 
-        public function pass()
+    public function pass()
     {
         ob_get_level() && ob_clean();
         throw new Pass();
@@ -2411,11 +2411,11 @@ class Input extends EventEmitter
 
 class Output extends EventEmitter
 {
-        public $locals = array();
+    public $locals = array();
 
-        public $app;
+    public $app;
 
-        public function __construct(App $app)
+    public function __construct(App $app)
     {
         $this->app = $app;
 
@@ -2427,7 +2427,7 @@ class Output extends EventEmitter
         $this->locals = & $this->app->locals;
     }
 
-        public function status($status = null)
+    public function status($status = null)
     {
         if (is_numeric($status)) {
             $this->injectors['status'] = $status;
@@ -2436,7 +2436,7 @@ class Output extends EventEmitter
         return $this->injectors['status'];
     }
 
-        public function body($content = null)
+    public function body($content = null)
     {
         if ($content !== null) {
             $this->injectors['body'] = $content;
@@ -2446,7 +2446,7 @@ class Output extends EventEmitter
         return $this->injectors['body'];
     }
 
-        public function write($data)
+    public function write($data)
     {
         if (!$data) return $this->injectors['body'];
 
@@ -2455,18 +2455,18 @@ class Output extends EventEmitter
         return $this;
     }
 
-        public function end($data = '')
+    public function end($data = '')
     {
         $this->write($data);
         throw new Stop();
     }
 
-        public function isOk()
+    public function isOk()
     {
         return $this->injectors['status'] === 0;
     }
 
-        public function __toString()
+    public function __toString()
     {
         return $this->injectors['body'];
     }
@@ -2484,13 +2484,13 @@ use Everzet\Jade\Lexer\Lexer;
 
 class Jade
 {
-        protected $options = array(
+    protected $options = array(
         'compile_dir' => '/tmp'
     );
 
     protected $engine;
 
-        public function __construct(array $options = array())
+    public function __construct(array $options = array())
     {
         $this->options = $options + $this->options;
 
@@ -2500,7 +2500,7 @@ class Jade
         $this->engine = new Jader($parser, $dumper, $this->options['compile_dir']);
     }
 
-        public function render($path, $data, $dir)
+    public function render($path, $data, $dir)
     {
         $file = $this->engine->cache($dir . $path);
 

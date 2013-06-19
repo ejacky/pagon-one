@@ -85,7 +85,7 @@ function remove_use_statement($php)
 
 function remove_comment($php)
 {
-    return preg_replace('#\/\*\*([\s\S]+?)\*\/\n#', '', $php);
+    return preg_replace('#([ ]*)\/\*\*([\s\S]+?)\*\/\n#', '', $php);
 }
 
 function get_uses($php)
